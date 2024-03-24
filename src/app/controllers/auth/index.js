@@ -28,8 +28,12 @@ const registerSimpleUser = async(req,res)=>{
 
         return res.status(201).json({
             status : "success",
-            user : newUser
-        })
+            message : "user registered successfully",
+            user : {
+                _id : newUser._id,
+                verificationToken : newUser.verification.token
+            }
+        });
 
     }catch(e){
         return res.status(500).json({
@@ -39,6 +43,69 @@ const registerSimpleUser = async(req,res)=>{
     }
 
 }
+
+const verifySimpleUser = async(req,res)=>{
+    try{
+
+        const { token, email } = req.query;
+
+        const user = await UserModel.findOne({
+            email
+        });
+
+        if(!user){
+            return res.status(409).json({
+                status : "error",
+                message : "user does not exists"
+            })
+        }
+
+
+        if(user.verification.isVerified){
+            return res.status(409).json({
+                status : "error",
+                message : "user already verified"
+            })
+        }
+
+        if(user.verification.token !== token){
+            return res.status(409).json({
+                status : "error",
+                message : "wrong verification token passed"
+            })
+        }
+
+        const tokenVerified = jwt.verify(token,JWT_SECRET);
+
+        if(tokenVerified._id != user._id){
+
+            return res.status(409).json({
+                status : "error",
+                message : "verification token not passed"
+            });
+        }
+
+        await UserModel.updateOne({
+            _id : tokenVerified._id
+        },{
+            'verification.isVerified' : true,
+            'verification.verifiedAt' : new Date
+        });
+
+        return res.status(200).json({
+            status : "success",
+            message : "user verified successfully"
+        })
+
+
+    }catch(e){
+        return res.status(500).json({
+            status  : 'error',
+            message : 'server error'
+        })
+    }
+}
+
 
 const loginSimpleUser = async (req,res)=>{
     try{
@@ -54,6 +121,13 @@ const loginSimpleUser = async (req,res)=>{
             return res.status(409).json({
                 status : "error",
                 message : "user does not exist"
+            });
+        }
+
+        if(!user.verification.isVerified){
+            return res.status(409).json({
+                status : "error",
+                message : "user not verified"
             });
         }
 
@@ -93,5 +167,6 @@ const loginSimpleUser = async (req,res)=>{
 
 module.exports = {
     registerSimpleUser,
-    loginSimpleUser
+    loginSimpleUser,
+    verifySimpleUser
 }

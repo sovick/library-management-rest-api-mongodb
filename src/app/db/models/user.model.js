@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
-const {  SALT_ROUNDS }  = require('../../../config');
+const jwt = require('jsonwebtoken');
+const { SALT_ROUNDS, JWT_SECRET }  = require('../../../config');
 
 const userSchema = mongoose.Schema({
     name : {
@@ -22,6 +23,18 @@ const userSchema = mongoose.Schema({
         required : true,
         enum : ['user','admin'],
         default: 'user'
+    },
+    verification: {
+        isVerified : {
+            type : Boolean,
+            default : false
+        },
+        token : {
+            type : String
+        },
+        verifiedAt : {
+            type : Date
+        }
     }
 },{
     timestamps : true
@@ -32,6 +45,15 @@ userSchema.pre('save',async function (next){
     const genSalt = await bcrypt.genSalt(Number(SALT_ROUNDS));
     const hashedPassword = await bcrypt.hash(user.password,genSalt);
     user.password = hashedPassword;
+
+    const verificationToken = jwt.sign({
+        _id  : user._id
+    },JWT_SECRET,{
+        expiresIn : 60 * 5
+    })
+
+    user.verification.token = verificationToken;
+
 })
 
 const UserModel = mongoose.model('User',userSchema);

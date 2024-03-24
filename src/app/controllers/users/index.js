@@ -9,16 +9,16 @@ const updateUser = async(req,res)=>{
         await UserModel.updateOne({
             _id : req.user._id
         },{
-            username,
-            name : fullname
+            'username' : username,
+            'name' : fullname
         });
 
         return res.status(200).json({
-            status : "success"
+            status : "success",
+            message : "user details saved successfully"
         })
 
     }catch(e){
-        console.log(e);
         return res.status(500).json({
             status : "error",
             message : "server error"
@@ -50,8 +50,6 @@ const getUser = async(req,res)=>{
             message : "server error"
         });
     }
-
-
 }
 
 
