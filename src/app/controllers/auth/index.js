@@ -107,6 +107,57 @@ const verifySimpleUser = async(req,res)=>{
 }
 
 
+const resendVerificationToken = async(req,res)=>{
+
+    try{
+
+        const { email } = req.body;
+
+        const user = await UserModel.findOne({
+            email 
+        });
+
+        if(!user){
+            return res.status(409).json({
+                status : "user not found"
+            })
+        }
+
+        if(user.verification.isVerified){
+            return res.status(409).json({
+                status : "error",
+                message : "user verification already done!"
+            });
+        }
+
+        // Create a new token for the user.
+
+        const verificationToken = jwt.sign({
+            _id  : user._id
+        },JWT_SECRET,{
+            expiresIn : 60 * 5
+        })
+
+        await UserModel.update({
+            _id : user._id
+        },{
+            'verificationToken' : verificationToken
+        })
+
+        return res.status(200).json({
+            status : "success",
+            token : verificationToken
+        });
+
+    }catch(e){
+        return res.status(500).json({
+            status : "error",
+            message : "server error"
+        })
+    }
+}
+
+
 const loginSimpleUser = async (req,res)=>{
     try{
 
@@ -168,5 +219,6 @@ const loginSimpleUser = async (req,res)=>{
 module.exports = {
     registerSimpleUser,
     loginSimpleUser,
-    verifySimpleUser
+    verifySimpleUser,
+    resendVerificationToken
 }
