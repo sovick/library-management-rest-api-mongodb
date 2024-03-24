@@ -1,7 +1,7 @@
 const express = require('express');
 const helmet = require('helmet');
 const cors = require('cors');
-
+const baseRouter = require('./routes')
 const app = express();
 
 app.use(helmet());
@@ -12,5 +12,6 @@ app.use(express.urlencoded({
 }));
 
 app.disable('x-powered-by');
+app.use('/api',baseRouter);
 
 module.exports = app;
