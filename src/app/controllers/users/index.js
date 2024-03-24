@@ -36,7 +36,8 @@ const getUser = async(req,res)=>{
         },{
             password : 0,
             createdAt : 0,
-            updatedAt : 0
+            updatedAt : 0,
+            verification : 0
         });
 
         return res.status(200).json({
