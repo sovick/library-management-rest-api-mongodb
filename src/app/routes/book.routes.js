@@ -7,4 +7,9 @@ router.post('/add-new',passport.authenticate('jwt',{
     session : false
 }),controller.addBookToPuchaseListing);
 
+router.get('/list/:id',passport.authenticate('jwt',{
+    session : false
+}),controller.getBook);
+
+
 module.exports = router;

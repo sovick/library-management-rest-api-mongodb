@@ -18,7 +18,8 @@ const bookSchema = mongoose.Schema({
         required : true
     },
     listedBy : {
-        type : mongoose.ObjectId
+        type : mongoose.Types.ObjectId,
+        ref : 'User'
     }
 
 },{
