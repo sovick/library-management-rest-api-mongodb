@@ -22,4 +22,9 @@ router.get('/all',
     controller.getAllBooks
 );
 
+router.post('/add-to-favorite',
+    passport.authenticate('jwt',{session : false}),
+    controller.addBookToFavorite
+);
+
 module.exports = router;

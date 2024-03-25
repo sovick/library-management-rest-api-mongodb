@@ -1,4 +1,6 @@
 const BookModel = require('../../db/models/book.model');
+const UserModel = require('../../db/models/user.model');
+
 const { PAGINATION_SIZE } = require('../../../config');
 
 const addBookToPuchaseListing = async(req, res)=>{
@@ -139,10 +141,70 @@ const getAllBooks = async(req,res)=>{
 }
 
 
+const addBookToFavorite = async(req,res)=>{
+    try{
+
+        const { bookId } = req.body;
+
+        const userId = req.user._id;
+
+        // Check if the book-id exists
+
+        const bookInfo = await BookModel.findOne({
+            _id : bookId
+        });
+
+        if(!bookInfo){
+            return res.status(409).json({
+                status : 'error',
+                message : 'book details not found'
+            });
+        }
+
+        // check if the book is added already to the list of favorites
+        const bookAlreadyAddedToFav = await UserModel.findOne({
+            _id : userId,
+            favoriteBooks : bookId
+        },{
+            favoriteBooks : 1 
+        });
+
+        if(bookAlreadyAddedToFav){
+            return res.status(409).json({
+                status : "error",
+                message : "book details already exists"
+            })
+        }
+        
+
+        await UserModel.updateOne({
+            _id : userId
+        },{
+            $push : {
+                favoriteBooks : bookId
+            }
+        });
+
+        return res.status(200).json({
+            status : "success",
+            message : 'book added to favorites'
+        })
+
+
+    }catch(e){
+        return res.status(500).json({
+            status : "error",
+            message : "server error"
+        })
+    }
+}
+
+
 module.exports = {
     addBookToPuchaseListing,
     getBook,
     getAllBooksListedByUser,
-    getAllBooks
+    getAllBooks,
+    addBookToFavorite
 
 }
