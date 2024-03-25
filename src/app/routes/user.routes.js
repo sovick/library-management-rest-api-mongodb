@@ -7,4 +7,6 @@ router.post('/update',passport.authenticate('jwt',{session : false}),controller.
 
 router.get('/details',passport.authenticate('jwt',{session : false}),controller.getUser);
 
+router.get('/favorites',passport.authenticate('jwt',{session : false}),controller.getFavoriteBooks);
+
 module.exports = router;
