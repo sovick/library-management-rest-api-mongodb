@@ -20,6 +20,10 @@ const bookSchema = mongoose.Schema({
     listedBy : {
         type : mongoose.Types.ObjectId,
         ref : 'User'
+    },
+    likedBy : {
+        type : Number,
+        default : 0
     }
 
 },{

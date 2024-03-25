@@ -185,11 +185,82 @@ const addBookToFavorite = async(req,res)=>{
             }
         });
 
+        await BookModel.updateOne({
+            _id: bookId
+        },{
+            $inc : {
+                likedBy : 1
+            }
+        })
+
         return res.status(200).json({
             status : "success",
             message : 'book added to favorites'
         })
 
+
+    }catch(e){
+        return res.status(500).json({
+            status : "error",
+            message : "server error"
+        })
+    }
+}
+
+const removeBookFromFavorite = async(req,res)=>{
+    try{
+
+        const { bookId } = req.body;
+        const userId = req.user._id;
+
+        // Check if the book-id exists
+
+        const bookInfo = await BookModel.findOne({
+            _id : bookId
+        });
+
+        if(!bookInfo){
+            return res.status(409).json({
+                status : 'error',
+                message : 'book details not found'
+            });
+        }
+
+        // check if the book exists in the list of favorites
+        const bookExistsInFav = await UserModel.findOne({
+            _id : userId,
+            favoriteBooks : bookId
+        },{
+            favoriteBooks : 1 
+        });
+
+        if(!bookExistsInFav){
+            return res.status(409).json({
+                status : "error",
+                message : "book details doesn't exists"
+            })
+        }
+
+        await UserModel.updateOne({
+            _id : userId
+        },{
+            $pull : {
+                favoriteBooks : bookId
+            }
+        });
+
+        await BookModel.updateOne({
+            _id: bookId
+        },{
+            $inc : {
+                likedBy : -1
+            }
+        })
+
+        return res.status(200).json({
+            status : "success",
+            message : "book removed from favorites"
+        });
 
     }catch(e){
         return res.status(500).json({
@@ -205,6 +276,7 @@ module.exports = {
     getBook,
     getAllBooksListedByUser,
     getAllBooks,
-    addBookToFavorite
+    addBookToFavorite,
+    removeBookFromFavorite
 
 }
