@@ -32,4 +32,9 @@ router.post('/remove-favorite',
     controller.removeBookFromFavorite
 );
 
+router.get('/most-favorites',
+    passport.authenticate('jwt',{session : false}),
+    controller.getMostFavoriteBooksByOrder
+)
+
 module.exports = router;

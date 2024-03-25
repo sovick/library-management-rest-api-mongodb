@@ -271,12 +271,49 @@ const removeBookFromFavorite = async(req,res)=>{
 }
 
 
+// Get the Details of favorite Books by order
+const getMostFavoriteBooksByOrder = async(req,res)=>{
+    try{
+
+        const { page : currentPage } = req.query;
+
+        const pageSize = PAGINATION_SIZE;
+        const pageNo = currentPage * pageSize // default currentPage = 0
+
+        const bookList = await BookModel.find({},{
+            _id : 1,
+            name : 1,
+            price : 1,
+            quantity : 1,
+            author : 1,
+            likedBy : 1
+        })
+        .limit(pageSize)
+        .skip(pageNo)
+        .sort([['likedBy',-1]]);
+
+        return res.status(200).json({
+            status : "success",
+            books : bookList
+        });
+
+    }catch(e){
+        console.log(e);
+        return res.status(500).json({
+            status : 'error',
+            message : 'server error'
+        })
+    }
+
+
+}
+
 module.exports = {
     addBookToPuchaseListing,
     getBook,
     getAllBooksListedByUser,
     getAllBooks,
     addBookToFavorite,
-    removeBookFromFavorite
-
+    removeBookFromFavorite,
+    getMostFavoriteBooksByOrder
 }
