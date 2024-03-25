@@ -17,4 +17,9 @@ router.get('/list-all',
     controller.getAllBooksListedByUser
 )
 
+router.get('/all',
+    passport.authenticate('jwt',{session : false}),
+    controller.getAllBooks
+);
+
 module.exports = router;

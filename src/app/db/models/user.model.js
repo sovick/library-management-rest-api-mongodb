@@ -35,7 +35,11 @@ const userSchema = mongoose.Schema({
         verifiedAt : {
             type : Date
         }
-    }
+    },
+    favoriteBooks : [{
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Book'
+    }]
 },{
     timestamps : true
 })

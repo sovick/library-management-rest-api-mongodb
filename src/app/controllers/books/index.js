@@ -108,10 +108,41 @@ const getAllBooksListedByUser = async(req,res)=>{
     }
 }
 
+const getAllBooks = async(req,res)=>{
+    try{
+
+        const { page : currentPage } = req.query;
+
+        const pageSize = PAGINATION_SIZE;
+        const pageNo = currentPage * pageSize // default currentPage = 0
+
+        const bookList = await BookModel.find({},{
+            listedBy : 0,
+            createdAt : 0,
+            updatedAt : 0,
+            __v : 0
+        })
+        .limit(pageSize)
+        .skip(pageNo);
+
+        return res.status(200).json({
+            status : "success",
+            books : bookList
+        });
+
+    }catch(e){
+        return res.status(500).json({
+            status : 'error',
+            message : 'server error'
+        })
+    }
+}
+
 
 module.exports = {
     addBookToPuchaseListing,
     getBook,
-    getAllBooksListedByUser
+    getAllBooksListedByUser,
+    getAllBooks
 
 }
