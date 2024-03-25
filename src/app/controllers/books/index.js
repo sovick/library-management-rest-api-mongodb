@@ -74,10 +74,36 @@ const getBook = async(req,res)=>{
     }
 }
 
+const getAllBooksListedByUser = async(req,res)=>{
+    try{
 
+        const listedBy = req.user._id;
+        const bookList = await BookModel.find({
+            listedBy
+        },{
+            listedBy : 0,
+            createdAt : 0,
+            updatedAt : 0,
+            __v : 0
+        });
+
+        return res.status(200).json({
+            status : "success",
+            books : bookList
+        });
+
+    }catch(e){
+        return res.status(500).json({
+            status : 'error',
+            message : 'server error'
+        })
+    }
+}
 
 
 module.exports = {
     addBookToPuchaseListing,
-    getBook
+    getBook,
+    getAllBooksListedByUser
+
 }

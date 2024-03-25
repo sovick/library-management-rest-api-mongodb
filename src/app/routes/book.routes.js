@@ -12,4 +12,9 @@ router.get('/list/:id',passport.authenticate('jwt',{
 }),controller.getBook);
 
 
+router.get('/list-all',
+    passport.authenticate('jwt',{session : false}),
+    controller.getAllBooksListedByUser
+)
+
 module.exports = router;
