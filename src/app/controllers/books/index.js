@@ -1,4 +1,5 @@
 const BookModel = require('../../db/models/book.model');
+const { PAGINATION_SIZE } = require('../../../config');
 
 const addBookToPuchaseListing = async(req, res)=>{
     try{
@@ -77,7 +78,12 @@ const getBook = async(req,res)=>{
 const getAllBooksListedByUser = async(req,res)=>{
     try{
 
+        const { page : currentPage } = req.query;
         const listedBy = req.user._id;
+
+        const pageSize = PAGINATION_SIZE;
+        const pageNo = currentPage * pageSize // default currentPage = 0
+
         const bookList = await BookModel.find({
             listedBy
         },{
@@ -85,7 +91,9 @@ const getAllBooksListedByUser = async(req,res)=>{
             createdAt : 0,
             updatedAt : 0,
             __v : 0
-        });
+        })
+        .limit(pageSize)
+        .skip(pageNo);
 
         return res.status(200).json({
             status : "success",
