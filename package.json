@@ -1,13 +1,13 @@
 {
   "name": "rest-api-library",
   "version": "1.0.0",
-  "description": "",
+  "description": "rest-api for library managment using mongodb",
   "main": "index.js",
   "scripts": {
     "start:dev": "nodemon src/index"
   },
   "keywords": [],
-  "author": "",
+  "author": "dev.sovick@gmail.com",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
